@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>Saud Arcade Studios | Tic Tac Toe</title>
+  <style>
+    :root{--bg:#07111f;--panel:#101e30;--panel2:#14263b;--line:#29415c;--cyan:#53e5f2;--gold:#ffd166;--muted:#9bb0c7;--white:#f4f8ff;--red:#ff748c}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#183b56 0,#0b1a2b 42%,var(--bg) 78%);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:var(--white);display:flex;justify-content:center;padding:28px 14px}
+    .wrap{width:min(100%,760px)}header{text-align:center;margin:8px 0 24px}.eyebrow{letter-spacing:4px;font-size:11px;color:var(--cyan);font-weight:800}.brand{font-size:clamp(25px,5vw,42px);font-weight:950;letter-spacing:1px;margin:8px 0 2px;text-shadow:0 0 24px #53e5f255}.credit{margin:12px auto 0;color:var(--muted);font-size:11px;letter-spacing:3px}.credit strong{display:block;color:var(--gold);font-size:clamp(19px,4vw,27px);letter-spacing:2px;text-shadow:0 0 18px #ffd16655;margin-top:4px}.credit:after{content:"";display:block;width:110px;height:3px;border-radius:8px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:10px auto}
+    .panel{background:linear-gradient(145deg,#13263aee,#0d1b2cee);border:1px solid var(--line);border-radius:22px;padding:clamp(16px,4vw,25px);box-shadow:0 22px 65px #0006,inset 0 1px #ffffff0b;margin-bottom:16px}
+    h2{font-size:17px;margin:0 0 14px}.muted{color:var(--muted)}.small{font-size:12px}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1}
+    input{min-width:0;width:100%;background:#081523;border:1px solid #35516d;border-radius:12px;padding:14px;color:var(--white);font-size:15px;outline:none}input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #53e5f21c}
+    button{border:0;border-radius:12px;padding:13px 16px;font-weight:850;font-size:14px;cursor:pointer;color:#06121c;background:linear-gradient(135deg,var(--cyan),#7bf0d3);box-shadow:0 8px 22px #53e5f222;transition:.18s}button:hover{transform:translateY(-1px);filter:brightness(1.06)}button:disabled{opacity:.45;cursor:not-allowed;transform:none}.secondary{background:#1b3048;color:var(--white);border:1px solid #38516c;box-shadow:none}.gold{background:linear-gradient(135deg,#ffd166,#ffb84d)}.danger{background:#482435;color:#ffdce3;border:1px solid #784257;box-shadow:none}
+    .status{border:1px solid #29445e;background:#0a1928;border-radius:12px;padding:12px 14px;color:var(--muted);font-size:13px;margin-top:12px;min-height:44px}.status.good{border-color:#287d73;color:#9cf2dc}.status.bad{border-color:#8b4053;color:#ffb4c1}
+    .hidden{display:none!important}.game-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}.room-pill{font-size:12px;color:var(--gold);border:1px solid #6c5a32;border-radius:999px;padding:8px 12px;background:#332a171c}.players{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.player{padding:13px;border-radius:14px;background:#0a1928;border:1px solid #29415c}.player.active{border-color:var(--cyan);box-shadow:0 0 0 2px #53e5f21a}.player b{display:block;font-size:14px}.player span{font-size:12px;color:var(--muted)}
+    .board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,420px);margin:20px auto}.cell{aspect-ratio:1;background:linear-gradient(145deg,#142b42,#0b1929);border:1px solid #34516e;border-radius:17px;color:var(--cyan);font-size:clamp(42px,12vw,76px);font-weight:950;display:grid;place-items:center;box-shadow:inset 0 1px #ffffff0a;user-select:none}.cell.o{color:var(--gold)}.cell.win{border-color:var(--gold);box-shadow:0 0 22px #ffd16635,inset 0 0 20px #ffd16612}.cell:disabled{cursor:default;opacity:1}
+    .game-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.game-actions button{min-width:140px}.center{text-align:center}.footer{text-align:center;color:#6f849c;font-size:11px;padding:10px}
+    @media(max-width:480px){body{padding:18px 10px}.panel{border-radius:18px}.board{gap:7px}.cell{border-radius:13px}.game-actions button{flex:1}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">WELCOME TO</div>
+    <div class="brand">SAUD ARCADE STUDIOS</div>
+    <div class="credit">CREATED &amp; DESIGNED BY<strong>SAUD ABDULLA</strong></div>
+  </header>
+
+  <section id="lobby" class="panel">
+    <h2>🌐 Online Multiplayer</h2>
+    <p class="muted small">Create a private room and share its code with your friend. Both players can play from different devices.</p>
+    <div class="row">
+      <button id="createBtn">＋ Create Room</button>
+    </div>
+    <div style="height:12px"></div>
+    <div class="row">
+      <input id="roomInput" maxlength="6" placeholder="Enter 6-character room code" autocomplete="off">
+      <button id="joinBtn" class="gold">Join Room</button>
+    </div>
+    <div id="lobbyStatus" class="status">Connecting securely…</div>
+    <p class="muted small" style="margin-bottom:0">Tip: Open the website on two devices. One creates a room; the other joins using the code.</p>
+  </section>
+
+  <section id="gamePanel" class="panel hidden">
+    <div class="game-top">
+      <div><h2 style="margin:0 0 4px">Tic Tac Toe</h2><div id="gameMessage" class="muted small">Waiting for opponent…</div></div>
+      <div class="room-pill">ROOM: <b id="roomCodeLabel">------</b></div>
+    </div>
+    <div class="players">
+      <div id="playerX" class="player"><b>❌ Player X</b><span id="xSub">You / Host</span></div>
+      <div id="playerO" class="player"><b>⭕ Player O</b><span id="oSub">Opponent</span></div>
+    </div>
+    <div id="board" class="board" aria-label="Tic Tac Toe board"></div>
+    <div class="game-actions">
+      <button id="copyBtn" class="gold">Copy Room Code</button>
+      <button id="leaveBtn" class="secondary">Leave Room</button>
+    </div>
+    <div id="gameStatus" class="status center">Room created. Share the code with your friend.</div>
+  </section>
+  <div class="footer">© SAUD ARCADE STUDIOS · MADE FOR FRIENDS</div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+  import { getDatabase, ref, set, get, onValue, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+  import { firebaseConfig } from "./firebase-config.js";
+
+  const $ = id => document.getElementById(id);
+  const lobby = $("lobby"), gamePanel = $("gamePanel");
+  let auth, db, user = null, roomCode = null, roomData = null, unsubscribe = null, mySymbol = null;
+  const winLines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  const setStatus = (el, msg, kind="") => { el.textContent = msg; el.className = "status" + (kind ? " " + kind : ""); };
+  const code = () => Math.random().toString(36).slice(2,8).toUpperCase().padEnd(6,"X");
+  const roomRef = () => ref(db, `rooms/${roomCode}`);
+  const movesRef = () => ref(db, `rooms/${roomCode}/moves`);
+
+  function checkWinner(board) {
+    for (const line of winLines) if (board[line[0]] && board[line[0]] === board[line[1]] && board[line[1]] === board[line[2]]) return { winner: board[line[0]], line };
+    return board.every(Boolean) ? { winner: "draw", line: [] } : null;
+  }
+  function orderedMoves(moves) {
+    return Object.entries(moves || {}).map(([id,m]) => ({id,...m})).sort((a,b) => (a.createdAt||0)-(b.createdAt||0));
+  }
+  function boardFrom(room) {
+    const board = Array(9).fill("");
+    for (const m of orderedMoves(room?.moves)) if (Number.isInteger(m.cell) && m.cell >= 0 && m.cell < 9) board[m.cell] = m.symbol;
+    return board;
+  }
+  function symbolFor(uid, room) {
+    if (uid === room?.hostUid) return "X";
+    if (uid === room?.guestUid) return "O";
+    return null;
+  }
+  function render(room) {
+    roomData = room;
+    mySymbol = symbolFor(user.uid, room);
+    const board = boardFrom(room), result = checkWinner(board);
+    const count = orderedMoves(room.moves).length;
+    const next = count % 2 === 0 ? "X" : "O";
+    const guestReady = !!room.guestUid;
+    $("roomCodeLabel").textContent = roomCode;
+    $("xSub").textContent = room.hostUid === user.uid ? "You · Host" : "Opponent · Host";
+    $("oSub").textContent = room.guestUid === user.uid ? "You · Guest" : (guestReady ? "Opponent · Guest" : "Waiting to join…");
+    $("playerX").classList.toggle("active", !result && next === "X" && guestReady);
+    $("playerO").classList.toggle("active", !result && next === "O" && guestReady);
+    $("gameMessage").textContent = !guestReady ? "Waiting for your friend to join…" : result ? (result.winner === "draw" ? "It's a draw!" : `${result.winner} wins the round!`) : `${next}'s turn`;
+    $("gameStatus").textContent = !guestReady ? "Share the room code. The game starts when your friend joins." :
+      result ? (result.winner === "draw" ? "Well played! The board is full." : `Congratulations! Player ${result.winner} wins!`) :
+      (mySymbol === next ? "It's your turn. Choose an empty square." : "Opponent's turn. Please wait.");
+    const boardEl = $("board"); boardEl.innerHTML = "";
+    for (let i=0;i<9;i++) {
+      const b = document.createElement("button");
+      b.className = "cell" + (board[i] === "O" ? " o" : "");
+      b.textContent = board[i] === "X" ? "×" : board[i] === "O" ? "○" : "";
+      b.setAttribute("aria-label", `Cell ${i+1}${board[i] ? ", "+board[i] : ", empty"}`);
+      if (result?.line.includes(i)) b.classList.add("win");
+      b.disabled = !!board[i] || !guestReady || !!result || next !== mySymbol;
+      b.addEventListener("click", () => makeMove(i));
+      boardEl.appendChild(b);
+    }
+  }
+
+  async function makeMove(cell) {
+    if (!roomCode || !roomData || !mySymbol) return;
+    const moveKey = `m_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+    const result = await runTransaction(movesRef(), current => {
+      const list = Object.values(current || {}).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+      const board = Array(9).fill("");
+      list.forEach(m => { if (Number.isInteger(m.cell) && m.cell>=0 && m.cell<9) board[m.cell] = m.symbol; });
+      if (!roomData?.guestUid || checkWinner(board) || board[cell]) return;
+      const expected = list.length % 2 === 0 ? "X" : "O";
+      if (expected !== mySymbol) return;
+      const move = { uid:user.uid, symbol:mySymbol, cell, createdAt:Date.now() };
+      return { ...(current || {}), [moveKey]: move };
+    });
+    if (!result.committed) setStatus($("gameStatus"), "Move not accepted. Please wait for your turn.", "bad");
+  }
+
+  async function createRoom() {
+    if (!user) return;
+    $("createBtn").disabled = true;
+    try {
+      // A random six-character code is generated. A collision is extremely unlikely;
+      // Firebase rules only allow creating a room at an unused code.
+      roomCode = code();
+      await set(roomRef(), { hostUid:user.uid, guestUid:null, createdAt:Date.now(), moves:{} });
+      openRoom();
+    } catch (e) { setStatus($("lobbyStatus"), friendlyError(e), "bad"); }
+    finally { $("createBtn").disabled = false; }
+  }
+  async function joinRoom() {
+    if (!user) return;
+    const entered = $("roomInput").value.trim().toUpperCase();
+    if (!/^[A-Z0-9]{6}$/.test(entered)) { setStatus($("lobbyStatus"), "Please enter a valid 6-character room code.", "bad"); return; }
+    $("joinBtn").disabled = true;
+    try {
+      // Claim the guest slot atomically. Database rules verify that the room exists
+      // and that the guest slot is still empty.
+      const joined = await runTransaction(ref(db, `rooms/${entered}/guestUid`), current => current == null ? user.uid : undefined);
+      if (!joined.committed) throw new Error("Room not found, already full, or you created this room. Check the code.");
+      roomCode = entered;
+      openRoom();
+    } catch (e) { setStatus($("lobbyStatus"), friendlyError(e), "bad"); }
+    finally { $("joinBtn").disabled = false; }
+  }
+  function openRoom() {
+    lobby.classList.add("hidden"); gamePanel.classList.remove("hidden");
+    $("roomCodeLabel").textContent = roomCode;
+    if (unsubscribe) unsubscribe();
+    unsubscribe = onValue(roomRef(), snap => {
+      if (!snap.exists()) { leaveRoom(false); setStatus($("lobbyStatus"), "This room is no longer available.", "bad"); return; }
+      render(snap.val());
+    }, error => setStatus($("gameStatus"), friendlyError(error), "bad"));
+    setStatus($("gameStatus"), "Room is ready. Share the code with your friend.", "good");
+  }
+  function leaveRoom(showLobby=true) {
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    roomCode = null; roomData = null; mySymbol = null;
+    gamePanel.classList.add("hidden");
+    if (showLobby) lobby.classList.remove("hidden");
+  }
+  async function copyCode() {
+    try { await navigator.clipboard.writeText(roomCode); setStatus($("gameStatus"), "Room code copied. Send it to your friend!", "good"); }
+    catch { setStatus($("gameStatus"), `Your room code is ${roomCode}. Copy it manually.`, "good"); }
+  }
+  function friendlyError(e) {
+    const msg = e?.message || String(e);
+    if (msg.includes("PERMISSION_DENIED")) return "Firebase permission denied. Check Authentication and Database Rules setup.";
+    if (msg.toLowerCase().includes("network")) return "Network issue. Check your internet connection.";
+    return msg;
+  }
+
+  $("createBtn").addEventListener("click", createRoom);
+  $("joinBtn").addEventListener("click", joinRoom);
+  $("copyBtn").addEventListener("click", copyCode);
+  $("leaveBtn").addEventListener("click", () => leaveRoom());
+  $("roomInput").addEventListener("keydown", e => { if (e.key === "Enter") joinRoom(); });
+
+  try {
+    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("PASTE_")) throw new Error("First add your Firebase settings in firebase-config.js.");
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getDatabase(app);
+    setStatus($("lobbyStatus"), "Connecting to Firebase…");
+    onAuthStateChanged(auth, async current => {
+      if (current) {
+        user = current;
+        setStatus($("lobbyStatus"), "Connected! Create a room or join your friend's room.", "good");
+        $("createBtn").disabled = false; $("joinBtn").disabled = false;
+      } else {
+        try { await signInAnonymously(auth); }
+        catch (e) { setStatus($("lobbyStatus"), "Could not sign in. Enable Anonymous Authentication in Firebase. " + friendlyError(e), "bad"); }
+      }
+    });
+    $("createBtn").disabled = true; $("joinBtn").disabled = true;
+  } catch (e) {
+    setStatus($("lobbyStatus"), friendlyError(e), "bad");
+    $("createBtn").disabled = true; $("joinBtn").disabled = true;
+  }
+</script>
+</body>
+</html>
